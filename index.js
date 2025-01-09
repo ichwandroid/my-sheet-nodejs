@@ -1,11 +1,13 @@
 const express = require('express');
 const path = require('path');
 const { google } = require('googleapis');
+const bodyParser = require('body-parser'); // Tambahkan ini
 
 const app = express();
 
 const port = parseInt(process.env.PORT) || process.argv[3] || 3000;
 
+app.use(bodyParser.json()); // Tambahkan ini
 app.use(express.static(path.join(__dirname, 'public')))
   .set('views', path.join(__dirname, 'views'))
   .set('view engine', 'ejs');
@@ -24,7 +26,7 @@ app.get('/', (req, res) => {
 app.get('/profile-sekolah', async (req, res) => {
   const authClient = await auth.getClient();
   const spreadsheetId = '1NB38zBlpDdLvtsE_YDzLhXT8vtMQ6a-FUSPeTaec-N0';
-  const range = 'SUM PAIBP!A2:R';
+  const range = 'SUM PAIBP!A1:R';
 
   const response = await sheet.spreadsheets.values.get({
     auth: authClient,
@@ -35,6 +37,25 @@ app.get('/profile-sekolah', async (req, res) => {
   const data = response.data.values;
   res.render('profile', { data });
 })
+
+app.post('/update-sheet', async (req, res) => {
+  const authClient = await auth.getClient();
+  const spreadsheetId = '1NB38zBlpDdLvtsE_YDzLhXT8vtMQ6a-FUSPeTaec-N0';
+  const { range, values } = req.body;
+
+  try {
+    await sheet.spreadsheets.values.update({
+      auth: authClient,
+      spreadsheetId,
+      range,
+      valueInputOption: 'RAW',
+      resource: { values },
+    });
+    res.status(200).send('Update successful');
+  } catch (error) {
+    res.status(500).send('Update failed');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);

@@ -17,15 +17,52 @@
   const data = <%- JSON.stringify(data) %>;
   const container = document.querySelector('#example');
 
+  const colHeaders = data.shift();
+  
   const hot = new Handsontable(container, {
     data: data,
     themeName: 'ht-theme-main-dark-auto',
     rowHeaders: true,
-    colHeaders: true,
+    colHeaders: colHeaders,
     height: 'auto',
     autoWrapRow: true,
     autoWrapCol: true,
-    licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
+    undo: true,
+    licenseKey: 'non-commercial-and-evaluation', // for non-commercial use only
+    cells: function (row, col) {
+      const cellProperties = {};
+      if (col === 0 || col === 1 || col === 2) {
+        cellProperties.readOnly = true;
+      }
+      return cellProperties;
+    },
+    afterChange: function (changes, source) {
+      if (source === 'loadData') {
+        return; // don't save this change
+      }
+
+      changes.forEach(([row, prop, oldValue, newValue]) => {
+        // Hapus tanda ' dari angka
+        if (typeof newValue === 'string' && newValue.startsWith("'")) {
+          newValue = newValue.slice(1);
+        }
+
+        // Perbarui nilai di Google Sheets
+        const range = `SUM PAIBP!${String.fromCharCode(65 + prop)}${row + 2}`;
+        const values = [[newValue || '']]; // Gunakan string kosong jika nilai dihapus
+
+        fetch('/update-sheet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ range, values }),
+        })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+      });
+    }
   });
 
 </script>
