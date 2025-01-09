@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/styles/handsontable.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/styles/ht-theme-main.min.css" />
+</head>
+
+<body>
+  <div id="example"></div>
+</body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+<script>
+  const data = <%- JSON.stringify(data) %>;
+  const container = document.querySelector('#example');
+
+  const hot = new Handsontable(container, {
+    data: data,
+    themeName: 'ht-theme-main-dark-auto',
+    rowHeaders: true,
+    colHeaders: true,
+    height: 'auto',
+    autoWrapRow: true,
+    autoWrapCol: true,
+    licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
+  });
+
+</script>
+
+</html>
