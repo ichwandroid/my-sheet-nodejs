@@ -18,6 +18,13 @@
   const container = document.querySelector('#example');
 
   const colHeaders = data.shift();
+
+  const hiddenRows = [];
+  data.forEach((row, index) => {
+    if (row.every(cell => cell === '')) {
+      hiddenRows.push(index);
+    }
+  });
   
   const hot = new Handsontable(container, {
     data: data,
@@ -28,11 +35,23 @@
     autoWrapRow: true,
     autoWrapCol: true,
     undo: true,
+    manualRowResize: true,
+    manualColumnResize: true,
+    hiddenRows: {
+      rows: hiddenRows,
+      indicators: false
+    },
+    hiddenColumns: {
+      columns: colHeaders.map((header, index) => header === '' ? index : -1).filter(index => index !== -1),
+      indicators: false
+    },
     licenseKey: 'non-commercial-and-evaluation', // for non-commercial use only
     cells: function (row, col) {
       const cellProperties = {};
       if (col === 0 || col === 1 || col === 2) {
         cellProperties.readOnly = true;
+      } else {
+        cellProperties.type = 'numeric';
       }
       return cellProperties;
     },
