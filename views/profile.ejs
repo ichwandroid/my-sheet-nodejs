@@ -48,7 +48,7 @@
     licenseKey: 'non-commercial-and-evaluation', // for non-commercial use only
     cells: function (row, col) {
       const cellProperties = {};
-      if (col === 0 || col === 1 || col === 2) {
+      if (col === 0 || col === 1 || col === 2 || col === 13) {
         cellProperties.readOnly = true;
       } else {
         cellProperties.type = 'numeric';
@@ -61,11 +61,6 @@
       }
 
       changes.forEach(([row, prop, oldValue, newValue]) => {
-        // Hapus tanda ' dari angka
-        if (typeof newValue === 'string' && newValue.startsWith("'")) {
-          newValue = newValue.slice(1);
-        }
-
         // Perbarui nilai di Google Sheets
         const range = `SUM PAIBP!${String.fromCharCode(65 + prop)}${row + 2}`;
         const values = [[newValue || '']]; // Gunakan string kosong jika nilai dihapus
