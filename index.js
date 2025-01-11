@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 const sheet = google.sheets('v4');
 // Suggested code may be subject to a license. Learn more: ~LicenseLog:85271322.
 const auth = new google.auth.GoogleAuth({
-  keyFile: '../connect.json',
+  keyFile: 'connect.json',
   scopes: 'https://www.googleapis.com/auth/spreadsheets'
 });
 
